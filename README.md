@@ -1,41 +1,16 @@
 # JK Vegies 🥕🍅
 
-**Fresh vegetables & fruits — retail for homes (kgs & grams), wholesale for restaurants.**
+Fresh vegetables & fruits — retail for homes (kgs & grams), wholesale for restaurants.
+Supabase-backed static SPA (no build step).
 
-Single-file frontend: `index.html` (no build step, no framework, zero external deps).
+**Quick start → see [SETUP.md](SETUP.md)** (hosting, Supabase SQL, Gmail OTP, admin & rider roles).
 
-## Catalog
-- **Vegetables** — normal · exotic · organic
-- **Fruits** — normal · exotic · organic
-- Toggle **Retail / Wholesale** (restaurant rates, min 5 kg)
+- `index.html` — app shell (banner, search, drawers, footer)
+- `css/styles.css` — yellow-red theme, SVG buttons, 20% banner, responsive
+- `js/config.js` — Supabase URL + anon key (or set in-app via footer → Supabase Setup)
+- `js/app.js` — all logic: catalogue, cart, OTP auth, addresses, checkout, live tracking, admin & rider panels
+- `sql/schema.sql` — run once in Supabase (tables, RLS, roles, realtime, storage buckets)
+- `images/` — drop your `logo.png` here
 
-## Features
-- 🛒 Cart with **automatic bill calculation** (grams/kg aware, savings, delivery fee)
-- 🔔 **Notification centre** — new stock, order status, rider updates (real-time)
-- ❤️ **Heart button** on every item + "My Hearts" page
-- 🔍 Live search + category chips
-- 👤 Profile + **Gmail OTP sign-in** (Supabase email OTP, demo mode without config)
-- 📍 **Address optimizer** — type manually or auto-fetch full address (gali no., area, PIN) via GPS
-- 🛡️ **Admin panel** (`#/admin`) — add items with photo → approve with rate/name/discounted price → manage orders (who ordered what, assign rider, change status, see OTP)
-- 🏍️ **Rider panel** (`#/rider`) — accept job → mark picked → start delivery → **OTP handover**, with live map visible to customer + admin
-- 🔐 OTP everywhere: sign-in, order confirmation, delivery handover
-
-Login links are at the **end of the page** (footer bar).
-
-## Demo credentials (change in `CONFIG` block of index.html)
-- Admin passcode: `jkvegies@2026`
-- Rider passcode: `rider@2026`
-
-## Go live with Supabase
-1. Create a Supabase project
-2. Run `SUPABASE_SETUP.sql` in the SQL Editor
-3. Enable **Email OTP** in Authentication → Providers
-4. Fill in `CONFIG.SUPABASE_URL` and `CONFIG.SUPABASE_ANON_KEY` at the top of `index.html`
-5. Push — done. Realtime orders/notifications light up automatically.
-
-## Logo
-Drop your logo at **`images/logo.png`** — the banner picks it up automatically (SVG fallback shows until then).
-
-## Theme
-Yellow + red mixture, rectangular buttons with slight curves, SVG icons on every button,
-gov-website-style ticker & tables (for the lolz 😂), fully responsive.
+Verified: 36/36 automated E2E checks (jsdom + in-memory Supabase mock) covering
+catalogue/search/cart math/Gmail-OTP sign-in/addresses/checkout+OTP/admin portal/rider OTP handover/notifications.
