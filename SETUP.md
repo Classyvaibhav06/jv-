@@ -30,3 +30,22 @@ Ready-to-host static website. All data lives in **your Supabase project** — no
 - Address auto-fetch uses phone GPS + free reverse-geocoding; the customer still types/confirms gali number.
 - Delivery is pay-on-delivery; the 6-digit OTP is generated per order and shown to the customer — the rider must enter it to complete delivery.
 - Free delivery above ₹499, otherwise ₹29 (change `fee` in `js/app.js` checkout route to adjust).
+
+
+## 🏃 Demo mode (works with zero setup)
+
+Open the site and it just runs — catalogue, cart, OTP sign-in, favourites, addresses,
+orders, **admin panel** and **rider panel** all work on demo data stored in your
+browser (localStorage). No Supabase account needed.
+
+- **OTP shows on screen** (toast) instead of a Gmail email.
+- **Admin login:** `admin@jkvegies.in` → footer → Admin Login (any password also accepted there).
+- **Rider login:** `rider@jkvegies.in` → footer → Rider Login.
+- **Seeded:** 30 products across 6 categories (veg/fruit × normal/exotic/organic),
+  2 sample orders (one `confirmed`, one `on_the_way` for the demo rider), broadcasts,
+  a demo customer (Priya Sharma) and delivery OTPs (`482913` on the active order).
+- Demo changes persist per-browser. Reset anytime: `#/setup` → **Reset demo data**,
+  or run `JKV_DemoReset()` in the browser console.
+
+**Going live:** paste your Supabase URL + anon key on the **Supabase Setup** page —
+the site switches to live data immediately (demo data stays untouched in your browser).

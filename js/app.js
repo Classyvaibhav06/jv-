@@ -57,9 +57,12 @@ function sbConfigured() {
   return !!(c.SUPABASE_URL && c.SUPABASE_ANON_KEY && c.SUPABASE_URL.startsWith('http'));
 }
 function initSupabase() {
-  if (!sbConfigured()) { sb = null; return false; }
-  if (!sb) sb = window.supabase.createClient(window.JKV_CONFIG.SUPABASE_URL, window.JKV_CONFIG.SUPABASE_ANON_KEY);
-  return true;
+  if (sbConfigured()) {
+    if (!sb || sb.__demo) sb = window.supabase.createClient(window.JKV_CONFIG.SUPABASE_URL, window.JKV_CONFIG.SUPABASE_ANON_KEY);
+    return true;
+  }
+  if (window.JKV_Demo) { if (!sb) sb = window.JKV_Demo.client(); return true; }   // demo mode: full site, no Supabase
+  sb = null; return false;
 }
 function needSb() {
   if (!initSupabase()) { location.hash = '#/setup'; toast('Connect Supabase first', 'key'); return false; }
@@ -323,12 +326,7 @@ function productCard(p) {
 }
 function renderGrid() {
   const v = $('#view'); if (!v) return;
-  if (!sbConfigured()) {
-    v.innerHTML = `<div class="form-card"><h2>${icon('key')} Supabase not connected</h2>
-      <p class="sub">This store runs on your Supabase project. Connect it once — no fake items will ever be shown.</p>
-      <a class="btn" href="#/setup">${icon('key')} Open Supabase Setup</a></div>`;
-    return;
-  }
+  const demoNote = sbConfigured() ? '' : `<div class="setup-note" style="border-color:var(--yellow-deep);margin-bottom:14px">🏃 <b>Demo mode</b> — sample catalogue &amp; data running from your browser (no Supabase yet). OTP shows on screen; role logins: <b>admin@jkvegies.in</b> / <b>rider@jkvegies.in</b>. <a href="#/setup">Connect Supabase</a> when ready to go live.</div>`;
   const showCats = S.activeCat === 'all' ? S.categories : S.categories.filter(c => c.id === S.activeCat);
   let html = '';
   if (!S.categories.length && !S.products.length) {
@@ -348,7 +346,7 @@ function renderGrid() {
     }
     if (!html) html = `<div class="empty">${icon('search')}<h3>No matches for “${esc(S.q)}”</h3><p>Try another sabzi or fruit name.</p></div>`;
   }
-  v.innerHTML = html;
+  v.innerHTML = demoNote + html;
 }
 function bindGridEvents() {
   const v = $('#view');
@@ -432,6 +430,7 @@ route('/auth', async () => {
       <button class="btn ghost block" id="resendOtp" style="margin-top:8px">Resend OTP</button>
     </div>
     <p class="hint" style="margin-top:12px;font-size:12.5px;color:var(--muted)">Admins & riders: use the <a href="#/admin">Admin Login</a> / <a href="#/rider">Rider Login</a> links in the footer.</p>
+    ${sbConfigured() ? '' : `<p class="hint" style="margin-top:6px;font-size:12.5px;color:var(--red)">🏃 Demo: OTP appears on screen. Role logins — admin: <b>admin@jkvegies.in</b>, rider: <b>rider@jkvegies.in</b></p>`}
   </div>`;
   const email = () => $('#authEmail').value.trim();
   $('#sendOtp').onclick = async () => {
@@ -443,7 +442,7 @@ route('/auth', async () => {
     if (error) { toast(error.message, 'x'); return; }
     $('#otpStep1').hidden = true; $('#otpStep2').hidden = false;
     $('#otpEmailEcho').textContent = email();
-    toast('OTP sent — check your email', 'send');
+    toast(sb && sb.__demo && sb.__lastOtp ? `Demo OTP: ${sb.__lastOtp} (no email sent — code is on screen)` : 'OTP sent — check your email', 'send');
   };
   $('#verifyOtp').onclick = async () => {
     const code = $('#otpCode').value.trim();
@@ -732,7 +731,8 @@ route('/setup', async () => {
       <br>4️⃣ After your first sign-in, run: <code>update profiles set role='admin' where email='you@mail.com';</code>
       <br>5️⃣ Storage buckets are created by the SQL — upload product photos from the Admin panel.
     </div>
-    <div id="sbStatus"></div></div>`;
+    <div id="sbStatus"></div>${sbConfigured() ? '' : `<div class="setup-note" style="margin-top:10px">🏃 Running in demo mode — data lives in this browser.<br><button class="btn ghost block" id="demoReset" style="margin-top:8px" type="button">🧹 Reset demo data</button></div>`}</div>`;
+  if ($('#demoReset')) $('#demoReset').onclick = () => window.JKV_DemoReset();
   $('#sbSave').onclick = async () => {
     const url = $('#sbUrl').value.trim(), key = $('#sbKey').value.trim();
     if (!url.startsWith('http') || key.length < 20) { toast('Paste a valid URL and anon key', 'x'); return; }
