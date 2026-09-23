@@ -2,6 +2,11 @@
    JK VEGIES — theme: haldi yellow + tamatar red, desi fresh
    Clean rectangles, thodi si curve, bright but easy on eyes.
    ============================================================ */
+/* ---------- FIX: author display rules were overriding the UA [hidden] rule,
+   so .drawer/.drawer-scrim/.badge etc. stayed visible even when hidden.
+   This must win over every component rule: ---------- */
+[hidden]{display:none !important}
+
 :root{
   --yellow:#FFC107; --yellow-deep:#FFB300; --yellow-soft:#FFF6DE;
   --red:#D32F2F; --red-deep:#B71C1C; --red-soft:#FDECEA;
